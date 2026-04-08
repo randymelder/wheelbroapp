@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/Extensions)",
+      "Bash(mkdir -p /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/Models)",
+      "Bash(mkdir -p /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/Managers)",
+      "Bash(mkdir -p /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/Views/Components)",
+      "Bash(wc -l /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/**/*.swift /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/*.swift)"
+    ]
+  }
+}
