@@ -5,7 +5,10 @@
       "Bash(mkdir -p /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/Models)",
       "Bash(mkdir -p /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/Managers)",
       "Bash(mkdir -p /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/Views/Components)",
-      "Bash(wc -l /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/**/*.swift /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/*.swift)"
+      "Bash(wc -l /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/**/*.swift /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/*.swift)",
+      "Bash(mkdir -p \"/Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/wheelbro/wheelbro/Assets.xcassets/LaunchIcon.imageset\")",
+      "Bash(cp \"/Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/AppIcons/Assets.xcassets/AppIcon.appiconset/1024.png\" \"/Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/wheelbro/wheelbro/Assets.xcassets/LaunchIcon.imageset/LaunchIcon.png\")",
+      "Bash(mkdir -p \"/Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/wheelbro/wheelbro/Assets.xcassets/LaunchBackgroundColor.colorset\")"
     ]
   }
 }

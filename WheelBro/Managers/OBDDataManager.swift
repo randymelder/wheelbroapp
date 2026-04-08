@@ -14,14 +14,14 @@ final class OBDDataManager {
     // =========================================================================
     // MARK: - Live OBD Readings
     // =========================================================================
-    var fuelLevel:       Double = 50.0      // percent (0–100)
+    var fuelLevel:       Double = 0.0       // percent (0–100)
     var speed:           Double = 0.0       // mph
-    var rpm:             Int    = 800       // engine RPM
-    var oilTemp:         Double = 180.0     // °F
-    var coolantTemp:     Double = 195.0     // °F
-    var batteryVoltage:  Double = 14.2      // V
-    var distanceToEmpty: Double = 248.0     // miles
-    var vin:             String = "1J4BA2D13BL123456"
+    var rpm:             Int    = 0         // engine RPM
+    var oilTemp:         Double = 0.0       // °F
+    var coolantTemp:     Double = 0.0       // °F
+    var batteryVoltage:  Double = 0.0       // V
+    var distanceToEmpty: Double = 0.0       // miles
+    var vin:             String = "—"
     var errorCodes:      String = "None"    // comma-separated DTCs or "None"
 
     // =========================================================================
@@ -249,6 +249,7 @@ final class OBDDataManager {
         let remainingGallons   = (fuelLevel / 100.0) * tankGallons
 
         guard adjustedGPH > 0 else { return "—" }
+        guard remainingGallons > 0 else { return "0h 0m" }
 
         let hoursRemaining = remainingGallons / adjustedGPH
         let h = Int(hoursRemaining)
@@ -271,9 +272,22 @@ final class OBDDataManager {
             vin = "1J4BA2D13BL123456"
         } else {
             stopSimulator()
+            resetValues()
         }
         // Re-evaluate logging (it only runs when connected or in sim mode)
         handleLoggingChange()
+    }
+
+    private func resetValues() {
+        fuelLevel       = 0.0
+        speed           = 0.0
+        rpm             = 0
+        oilTemp         = 0.0
+        coolantTemp     = 0.0
+        batteryVoltage  = 0.0
+        distanceToEmpty = 0.0
+        vin             = "—"
+        errorCodes      = "None"
     }
 
     private func handleLoggingChange() {
