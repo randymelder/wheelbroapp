@@ -1,0 +1,75 @@
+Bluetooth description:
+1. iCar Pro
+  Device Name(BR/EDR): Android-Vlink
+  Device Name(BLE):    IOS-Vlink
+  MTU:                 Up to 185 Bytes
+  Other parameters are the same as vLinker MC+
+
+2. vLinker MC
+  Device Name(BR/EDR): vLinker MC
+             Pin code: 1234
+3. vLinker MC+
+  Device Name(BR/EDR): vLinker MC-Android
+                       (vLinker MC (Production before September 10, 2020) ) 
+             Pin code: 1234
+  Device Name(BLE):    vLinker MC-IOS
+                       (vLinker MC+ (Production before September 10, 2020) ) 
+    1> SERVICE UUID:   18F0
+      Characteristic UUID: 2AF0. 
+      Properties:          Notify, Indicate
+      Characteristic UUID: 2AF1.
+      Properties:          Write, Write Without Respense
+    2> SERVICE UUID:       E7810A71-73AE-499D-8C15-FAA9AEF0C3F2 
+      Characteristic UUID: BEF8D6C9-9C21-4C9E-B632-BD58C1009F9F.
+      Properties:          Read, Write, Write Without Respense, Notify, Indicate
+      MTU:                 Up to 512 Bytes
+4. vLinker BM
+  Device Name(BR/EDR): vLinker BM
+             Pin code: 1234
+5. vLinker BM+
+  Device Name(BR/EDR): vLinker BM-Android
+                       (vLinker BM (Production before September 10, 2020) ) 
+  Device Name(BLE):    vLinker BM-IOS
+                       (vLinker BM+ (Production before September 10, 2020) ) 
+  MTU:                 Up to 185 Bytes
+  Other parameters are the same as vLinker MC+
+6. vLinker FD
+  Device Name(BR/EDR): vLinker FD
+             Pin code: 1234
+7. vLinker FD+
+  Device Name(BR/EDR): vLinker FD-Android
+                       (vLinker FD (Production before September 10, 2020) ) 
+  Device Name(BLE):    vLinker FD-IOS
+                       (vLinker FD+ (Production before September 10, 2020) ) 
+  MTU:                 Up to 185 Bytes
+  Other parameters are the same as vLinker MC+
+
+8. vLinker FS
+  Device Name(BR/EDR): "vLinker FS XXXXX"
+  Accessory Protocol Token ID: "com.vgatemall"
+  PPID:  649626-099130
+
+9. vLinker MS
+  Device Name(BR/EDR): "vLinker MS XXXXX"
+  Accessory Protocol Token ID: "com.vgatemall"
+  PPID:  649626-112572
+
+10. iCar Pro 2S
+  Device Name(BR/EDR): Android-Vlink
+  Device Name(BLE):    IOS-Vlink
+  MTU:                 Up to 253 Bytes
+  Other parameters are the same as vLinker MC+
+
+WIFI description:
+1. vLinker MC WIFI
+      Device Name: vLinker MC; 
+      IP:          192.168.0.10. 
+      PORT:        35000
+2. vLinker BM WIFI
+      Device Name: vLinker BM; 
+      IP:          192.168.0.10. 
+      PORT:        35000
+3. vLinker FD WIFI
+      Device Name: vLinker FD; 
+      IP:          192.168.0.10. 
+      PORT:        35000

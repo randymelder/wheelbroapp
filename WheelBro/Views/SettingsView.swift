@@ -13,6 +13,13 @@ struct SettingsView: View {
     private let vehicles = ["Jeep Wrangler JK (2011-2018)"]
     @AppStorage("selectedVehicle") private var selectedVehicle = "Jeep Wrangler JK (2011-2018)"
 
+    /// Filtered peripheral list evaluated as a view property so that
+    /// SwiftUI's @Observable tracking registers the dependency correctly.
+    /// A let binding inside a @ViewBuilder closure can miss re-evaluations.
+    private var supportedPeripherals: [DiscoveredPeripheral] {
+        bleManager.discoveredPeripherals.filter(\.isVgateCompatible)
+    }
+
     var body: some View {
         // @Bindable lets us create two-way bindings to @Observable properties
         // without needing @StateObject / @ObservedObject.
@@ -82,13 +89,15 @@ struct SettingsView: View {
                         }
                         .disabled(bleManager.isScanning)
 
-                        // Discovered device list
-                        if bleManager.discoveredPeripherals.isEmpty && !bleManager.isScanning {
-                            Text("No devices found — tap Scan to search")
+                        // Discovered device list — only Vgate-compatible devices shown
+                        if supportedPeripherals.isEmpty && !bleManager.isScanning {
+                            Text(bleManager.discoveredPeripherals.isEmpty
+                                 ? "No devices found — tap Scan to search"
+                                 : "No compatible Vgate devices found — unsupported adapters are hidden")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         } else {
-                            ForEach(bleManager.discoveredPeripherals) { item in
+                            ForEach(supportedPeripherals) { item in
                                 Button(action: {
                                     bleManager.connect(to: item.peripheral)
                                 }) {
@@ -169,37 +178,80 @@ struct SettingsView: View {
                     }
                     .listRowBackground(Color.cardBackground)
 
-                    // ── Section 5: Connection Control ────────────────────────
+                    // ── Section 5: Tools ─────────────────────────────────────
                     Section {
-                        Button(action: {
-                            if bleManager.isConnected {
-                                bleManager.disconnect()
-                            }
-                        }) {
-                            HStack {
-                                Image(systemName: bleManager.isConnected ? "xmark.circle.fill" : "cable.connector.slash")
-                                    .foregroundStyle(bleManager.isConnected ? Color.wheelBroRed : .secondary)
-                                Text(bleManager.isConnected ? "Disconnect" : "Not Connected")
-                                    .foregroundStyle(bleManager.isConnected ? Color.wheelBroRed : .secondary)
-                                    .fontWeight(bleManager.isConnected ? .semibold : .regular)
+                        NavigationLink(destination: DiscoveryView()) {
+                            Label {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("PID Discovery")
+                                        .foregroundStyle(.white)
+                                    Text("Query which OBD-II PIDs your vehicle supports")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            } icon: {
+                                Image(systemName: "list.bullet.rectangle.portrait")
+                                    .foregroundStyle(Color.wheelBroYellow)
                             }
                         }
-                        .disabled(!bleManager.isConnected)
 
-                        if bleManager.isConnected {
+                        NavigationLink(destination: DiagnosticsView()) {
                             Label {
-                                Text("Connected to: \(bleManager.connectedPeripheral?.name ?? "Unknown")")
-                                    .font(.caption)
-                                    .foregroundStyle(.green)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Diagnostics")
+                                        .foregroundStyle(.white)
+                                    Text("Live BLE and OBD event log — export to diagnose issues")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            } icon: {
+                                Image(systemName: "stethoscope")
+                                    .foregroundStyle(Color.wheelBroYellow)
+                            }
+                        }
+                    } header: {
+                        sectionHeader("Tools")
+                    }
+                    .listRowBackground(Color.cardBackground)
+
+                    // ── Section 6: Connection Control (only shown when connected) ──
+                    if bleManager.isConnected {
+                        Section {
+                            // Connected device name
+                            Label {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(bleManager.connectedPeripheral?.name ?? "Unknown Device")
+                                        .fontWeight(.medium)
+                                        .foregroundStyle(.white)
+                                    Text(bleManager.connectedPeripheral.map {
+                                        String($0.identifier.uuidString.prefix(8)).uppercased()
+                                    } ?? "")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
                             } icon: {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundStyle(.green)
                             }
+                            .listRowBackground(Color.cardBackground)
+
+                            // Full-width red Disconnect button
+                            Button(action: { bleManager.disconnect() }) {
+                                Label("Disconnect", systemImage: "xmark.circle.fill")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 13)
+                                    .background(Color.wheelBroRed)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            }
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        } header: {
+                            sectionHeader("Connection")
                         }
-                    } header: {
-                        sectionHeader("Connection")
                     }
-                    .listRowBackground(Color.cardBackground)
                 }
                 .scrollContentBackground(.hidden)
                 .background(Color.black)

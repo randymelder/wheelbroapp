@@ -20,6 +20,7 @@ final class OBDDataManager {
     var oilTemp:         Double = 0.0       // °F
     var coolantTemp:     Double = 0.0       // °F
     var batteryVoltage:  Double = 0.0       // V
+    var fuelRate:        Double = 0.0       // L/hr from PID 5E; 0 = not available
     var distanceToEmpty: Double = 0.0       // miles
     var vin:             String = "—"
     var errorCodes:      String = "None"    // comma-separated DTCs or "None"
@@ -27,8 +28,17 @@ final class OBDDataManager {
     // =========================================================================
     // MARK: - Connection State  (written by BluetoothManager)
     // =========================================================================
-    var isConnected:        Bool   = false
+    var isConnected: Bool = false {
+        didSet { if isConnected { currentSessionID = UUID().uuidString } }
+    }
     var connectedDeviceName: String = ""
+
+    // =========================================================================
+    // MARK: - Session Tracking
+    // =========================================================================
+    /// Regenerated each time a BLE device connects or the simulator starts.
+    /// Written to every LogEntry so rows from the same session can be grouped.
+    private(set) var currentSessionID: String = UUID().uuidString
 
     // =========================================================================
     // MARK: - Settings  (persisted in UserDefaults)
@@ -86,6 +96,7 @@ final class OBDDataManager {
     // =========================================================================
     func startSimulator() {
         stopSimulator()
+        currentSessionID = UUID().uuidString   // new session each simulator start
         // Fire once immediately so the UI isn't blank on first load
         updateSimulatedValues()
         simulatorTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
@@ -105,9 +116,10 @@ final class OBDDataManager {
         oilTemp        = Double.random(in: 80...220)
         coolantTemp    = Double.random(in: 180...220)
         batteryVoltage = Double.random(in: 12.0...14.5)
-        vin            = "1J4BA2D13BL123456"   // Simulated VIN
+        fuelRate       = Double.random(in: 4.0...18.0)   // L/hr; typical JK range
+        vin            = "1J4BA2D13BL123456"              // Simulated VIN
         errorCodes     = dtcPool.randomElement() ?? "None"
-        distanceToEmpty = calculateDistanceToEmpty(fuelLevel: fuelLevel)
+        distanceToEmpty = calculateDistanceToEmpty(fuelLevel: fuelLevel, speed: speed, fuelRate: fuelRate)
     }
 
     // =========================================================================
@@ -119,9 +131,13 @@ final class OBDDataManager {
             rpm = Int(value) ?? rpm
         case "speed":
             speed = Double(value) ?? speed
+            distanceToEmpty = calculateDistanceToEmpty(fuelLevel: fuelLevel, speed: speed, fuelRate: fuelRate)
+        case "fuelRate":
+            fuelRate = Double(value) ?? fuelRate
+            distanceToEmpty = calculateDistanceToEmpty(fuelLevel: fuelLevel, speed: speed, fuelRate: fuelRate)
         case "fuelLevel":
             fuelLevel = Double(value) ?? fuelLevel
-            distanceToEmpty = calculateDistanceToEmpty(fuelLevel: fuelLevel)
+            distanceToEmpty = calculateDistanceToEmpty(fuelLevel: fuelLevel, speed: speed, fuelRate: fuelRate)
         case "oilTemp":
             oilTemp = Double(value) ?? oilTemp
         case "coolantTemp":
@@ -164,6 +180,35 @@ final class OBDDataManager {
         let timeStr = df.string(from: now)
 
         let deviceName = isSimulatorOn ? "Simulator" : connectedDeviceName
+        let sid        = currentSessionID
+
+        // Maps each telemetry key to its OBD PID/command and engineering unit.
+        // pid  — raw ELM327 command without mode prefix (or AT command for ATRV)
+        // unit — display unit written into every row for self-describing CSV export
+        let pidForKey:  [String: String] = [
+            "fuelLevel":       "2F",
+            "speed":           "0D",
+            "rpm":             "0C",
+            "oilTemp":         "5C",
+            "coolantTemp":     "05",
+            "batteryVoltage":  "ATRV",
+            "fuelRate":        "5E",
+            "distanceToEmpty": "",      // computed — no single PID
+            "vin":             "0902",
+            "errorCodes":      "03",
+        ]
+        let unitForKey: [String: String] = [
+            "fuelLevel":       "%",
+            "speed":           "mph",
+            "rpm":             "rpm",
+            "oilTemp":         "°F",
+            "coolantTemp":     "°F",
+            "batteryVoltage":  "V",
+            "fuelRate":        "L/hr",
+            "distanceToEmpty": "mi",
+            "vin":             "",
+            "errorCodes":      "",
+        ]
 
         // One LogEntry row per telemetry key (denormalized schema per spec)
         let pairs: [(String, String)] = [
@@ -173,16 +218,20 @@ final class OBDDataManager {
             ("oilTemp",         String(format: "%.1f", oilTemp)),
             ("coolantTemp",     String(format: "%.1f", coolantTemp)),
             ("batteryVoltage",  String(format: "%.2f", batteryVoltage)),
+            ("fuelRate",        String(format: "%.3f", fuelRate)),
             ("distanceToEmpty", String(format: "%.1f", distanceToEmpty)),
             ("vin",             vin),
-            ("errorCodes",      errorCodes)
+            ("errorCodes",      errorCodes),
         ]
 
         for (key, value) in pairs {
             ctx.insert(LogEntry(
                 date:          dateStr,
                 time:          timeStr,
+                sessionID:     sid,
                 key:           key,
+                pid:           pidForKey[key]  ?? "",
+                unit:          unitForKey[key] ?? "",
                 value:         value,
                 bleDeviceName: deviceName,
                 vinNumber:     vin
@@ -214,44 +263,52 @@ final class OBDDataManager {
     // MARK: - Derived Calculations
     // =========================================================================
 
-    /// Approximate distance to empty for Jeep Wrangler JK.
-    /// Tank: 18.6 gal  |  Average MPG: ~15 (conservative off-road estimate)
-    private func calculateDistanceToEmpty(fuelLevel: Double) -> Double {
-        let tankGallons = 18.6
-        let avgMPG      = 15.0
-        return (fuelLevel / 100.0) * tankGallons * avgMPG
+    /// Distance to empty (miles) for Jeep Wrangler JK (18.6 gal tank).
+    ///
+    /// When PID 5E fuel rate is available and the vehicle is moving, uses
+    /// instantaneous MPG (speed ÷ GPH) for accuracy. Falls back to a static
+    /// 15 MPG average when the vehicle is stopped or fuel rate is unavailable.
+    private func calculateDistanceToEmpty(fuelLevel: Double, speed: Double, fuelRate: Double) -> Double {
+        let tankGallons      = 18.6
+        let remainingGallons = (fuelLevel / 100.0) * tankGallons
+
+        if fuelRate > 0, speed > 5 {
+            let gph = fuelRate / 3.78541
+            let instantaneousMPG = speed / gph
+            return remainingGallons * instantaneousMPG
+        }
+
+        // Fallback: conservative static average for JK
+        return remainingGallons * 15.0
     }
 
     // -------------------------------------------------------------------------
-    /// Calculates "Time to Empty" from live OBD readings.
+    /// Time to empty using PID 5E (fuel rate in L/hr) as the primary source.
     ///
-    /// - Parameters:
-    ///   - fuelLevel:  Current fuel level, 0–100 %
-    ///   - speed:      Current vehicle speed, mph
-    ///   - rpm:        Current engine RPM
-    ///   - errorCodes: Active DTCs as comma-separated string or "None"
-    /// - Returns: Formatted string such as "2h 45m" or "—" when indeterminate.
-    ///
-    /// **STUB — replace with real implementation:**
-    /// The production version should maintain a rolling circular buffer of
-    /// (timestamp, fuelLevel) pairs (e.g., last 60 s) and compute the derivative
-    /// Δfuel/Δtime as the instantaneous consumption rate in % per second.
-    /// Convert that rate to gallons/hour using tank capacity, then divide the
-    /// remaining fuel volume by the rate to obtain time remaining in hours.
+    /// When PID 5E is available (fuelRate > 0), the ECU's own fuel flow
+    /// measurement is used directly — it already accounts for load, enrichment,
+    /// deceleration cutoff, etc. Falls back to a speed/RPM heuristic model
+    /// when PID 5E returns no data.
     func calculateTimeToEmpty(fuelLevel: Double, speed: Double, rpm: Int, errorCodes: String) -> String {
-        // Consumption scales with speed and RPM above idle
-        let speedFactor = speed > 0 ? (1.0 + (speed / 55.0) * 0.6) : 0.5
-        let rpmFactor   = 1.0 + (Double(rpm) / 2000.0) * 0.3
+        let tankGallons      = 18.6
+        let remainingGallons = (fuelLevel / 100.0) * tankGallons
 
-        let tankGallons        = 18.6
-        let baseGallonsPerHour = 1.2                      // ~idle consumption
-        let adjustedGPH        = baseGallonsPerHour * speedFactor * rpmFactor
-        let remainingGallons   = (fuelLevel / 100.0) * tankGallons
-
-        guard adjustedGPH > 0 else { return "—" }
         guard remainingGallons > 0 else { return "0h 0m" }
 
-        let hoursRemaining = remainingGallons / adjustedGPH
+        let gph: Double
+        if fuelRate > 0 {
+            // Primary: ECU-measured fuel flow (PID 5E)
+            gph = fuelRate / 3.78541
+        } else {
+            // Fallback: speed/RPM heuristic
+            let speedFactor = speed > 0 ? (1.0 + (speed / 55.0) * 0.6) : 0.5
+            let rpmFactor   = 1.0 + (Double(rpm) / 2000.0) * 0.3
+            gph = 1.2 * speedFactor * rpmFactor   // 1.2 GPH base ≈ JK idle
+        }
+
+        guard gph > 0 else { return "—" }
+
+        let hoursRemaining = remainingGallons / gph
         let h = Int(hoursRemaining)
         let m = Int((hoursRemaining - Double(h)) * 60)
 
@@ -278,13 +335,14 @@ final class OBDDataManager {
         handleLoggingChange()
     }
 
-    private func resetValues() {
+    func resetValues() {
         fuelLevel       = 0.0
         speed           = 0.0
         rpm             = 0
         oilTemp         = 0.0
         coolantTemp     = 0.0
         batteryVoltage  = 0.0
+        fuelRate        = 0.0
         distanceToEmpty = 0.0
         vin             = "—"
         errorCodes      = "None"

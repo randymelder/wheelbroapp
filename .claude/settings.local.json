@@ -8,7 +8,11 @@
       "Bash(wc -l /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/**/*.swift /Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/*.swift)",
       "Bash(mkdir -p \"/Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/wheelbro/wheelbro/Assets.xcassets/LaunchIcon.imageset\")",
       "Bash(cp \"/Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/AppIcons/Assets.xcassets/AppIcon.appiconset/1024.png\" \"/Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/wheelbro/wheelbro/Assets.xcassets/LaunchIcon.imageset/LaunchIcon.png\")",
-      "Bash(mkdir -p \"/Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/wheelbro/wheelbro/Assets.xcassets/LaunchBackgroundColor.colorset\")"
+      "Bash(mkdir -p \"/Volumes/Dropbox/Dropbox/repos/claudecode/wheelbro/WheelBro/wheelbro/wheelbro/Assets.xcassets/LaunchBackgroundColor.colorset\")",
+      "WebFetch(domain:stackoverflow.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(python3:*)"
     ]
   }
 }
