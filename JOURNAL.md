@@ -54,3 +54,13 @@ Changes requested by Randy Melder, in chronological order.
 **Changes made:**
 - `Views/AboutView.swift` — removed `Platform / "iOS"` and `Protocol / "OBD-II / ELM327 BLE"` rows (and their dividers) from the info card. Copyright line updated to "© 2026 RCMAZ Software, LLC".
 - `Views/DataView.swift` — footer copyright updated to "© 2026 RCMAZ Software, LLC. All Rights Reserved."
+
+---
+
+### Update README — IP owner corrected to RCMAZ Software, LLC
+**Date/Time:** 2026-04-10 21:35
+
+**Requested:** Update the README to reflect that RCMAZ Software, LLC is the owner of all app assets and intellectual property.
+
+**Changes made:**
+- `README.md` — License section updated; "WheelBro LLC" replaced with "RCMAZ Software, LLC".
