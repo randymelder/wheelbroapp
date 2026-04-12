@@ -20,14 +20,14 @@ All notable changes to WheelBro are documented here.
   - Shutter sound via `AudioServicesPlaySystemSound(1108)`; respects the device silent switch (iOS-enforced)
   - Flash: `Color.white` overlay animates in over 0.05 s, holds 0.15 s, fades out over 0.3 s
 - **TTE view — GPS and IMU cards** — Heading (with cardinal compass point as unit), Altitude (ft), Latitude (N/S), and Longitude (E/W) cards added to the grid. Heading shows `—` before the first GPS fix. Pitch and Roll share a single combined card (see Changed).
-- **No-connection overlay on TTE tab** — when BLE is disconnected and Simulator is off, a full-screen overlay with a red indicator and "Open Settings" button appears. Tapping the button navigates directly to the Settings tab.
+- **No-connection overlay on TTE tab** — when BLE is disconnected and Simulator is off, a full-screen overlay with a red indicator appears with two options: "Open Settings" (navigates to the Settings tab) and "Ignore" (dismisses the overlay and stays on TTE). The overlay reappears on the next disconnect after a device has been connected.
 - **`AppConstants.verboseLogging`** — single bool constant in `Constants.swift` that gates all console debug output. Set to `false` to silence every `wbLog()` call at zero cost (`@inline(__always)`).
 - **`wbLog()` helper** — drop-in replacement for `print()` throughout both manager files. All 38 call sites replaced.
 - **About tab** — displays app version, build number, vehicle compatibility, and copyright information. Tab order: TTE (0), Data (1), Settings (2), About (3).
 - **`Constants.swift`** — centralised file replacing all magic numbers and string literals with named constants across `BLEConstants`, `VehicleConstants`, `UIConstants`, `AppConstants`, `ATCommand`, `OBDCommand`, `ELM327Response`, `OBDKey`, `OBDLogPID`, `PIDCode`, `DateFormat`, `UserDefaultsKey`, `Tab`, `AppInfo`.
 - **PID Discovery (Phase 1 + Phase 2)** — bitmask range queries identify supported PIDs; each discovered PID is then polled for its current value. Export includes `pid`, `description`, and `value` columns.
 - **`pid` column in log entries** — `LogEntry.pid` stores the OBD command string that produced each row (e.g. `010C`, `012F`, `ATRV`, `derived`). Included in CSV export header.
-- **Disconnect button in Settings** — full-width red button, visible only when a BLE device is connected.
+- **Disconnect button in Settings** — full-width red button, visible only when a BLE device is connected. Displays the connected device name ("Disconnect from &lt;name&gt;").
 - **Clear log after export** — confirmation alert offered when the log export sheet is dismissed.
 - **1-second TTE heartbeat** — `.task`-based async loop increments `tickCount` every second, triggering a numeric content transition on the TTE display. Stable across re-renders (not restarted by state changes).
 
@@ -42,6 +42,7 @@ All notable changes to WheelBro are documented here.
 - **Pitch / Roll — combined card** — Pitch and Roll are now displayed in a single grid card side-by-side, separated by a faint yellow divider. Values use a smaller 22pt font with Up/Down and Right/Left labels underneath each reading. Frees one grid slot and reduces vertical scroll length.
 - **Screenshot trigger: swipe-down → double-tap TTE** — the screenshot action moved from a swipe-down drag gesture (which caused the ScrollView to rubber-band/bounce) to a double-tap on the large TTE countdown display.
 - **TTE logo removed** — the `wheelbro_logo` image between the status banner and TTE display has been hidden to reduce vertical height on the primary screen.
+- **Disconnect button repositioned** — moved from a standalone "Connection" section at the bottom of Settings into the top of the BLE Devices section, just above the Scan button and device list. Hidden when no device is connected; the separate Connection section has been removed.
 - **OBD protocol: `ATSP0` → `ATSP6`** — hardcoded to ISO 15765-4 CAN, 11-bit ID, 500 kbaud (the correct protocol for Jeep Wrangler JK). `ATSP0` (auto-detect) caused indefinite `SEARCHING…` / `STOPPED` responses on the IOS-Vlink adapter with this vehicle.
 - **Response-driven PID polling** — each valid OBD response immediately triggers the next `pollNextPID()` call. The 5-second timer is replaced by a 1.5-second watchdog that fires only when the adapter goes silent (lost packet, `NODATA` without prompt). Cycles through all PIDs as fast as the adapter responds.
 - **VIN integrated into poll cycle** — `OBDCommand.requestVIN` added as the 8th entry in `pidSequence`. Eliminates the race condition where a simultaneous one-shot `readVIN()` + `pollNextPID()` caused the ELM327 to drop the multi-frame ISO-TP VIN response.
