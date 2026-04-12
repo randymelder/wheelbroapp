@@ -75,6 +75,29 @@ Toggle a built-in data simulator that generates realistic OBD values every 5 sec
 - PID Discovery tool
 - "Test OBD Data" diagnostic command
 
+### Bro Cam
+Full-screen camera with a live telemetry heads-up display overlaid around the frame. All values from the TTE view are visible during capture and baked into every saved photo and video frame. The tab bar is hidden; an **X** button in the top-left corner exits back to the TTE view.
+
+**HUD layout — portrait:**
+- **Top**: Time to Empty, connection status, speed
+- **Left**: Fuel level, distance to empty, diagnostics status
+- **Right**: Pitch, roll, heading
+- **Bottom**: Altitude, latitude, longitude
+
+**HUD layout — landscape:**
+- **Top**: Time to Empty, connection status, speed, pitch, roll
+- **Left**: Fuel level, distance to empty, diagnostics status
+- **Bottom**: Altitude, latitude, longitude, heading
+- *(right strip omitted — that column is occupied by the floating controls)*
+
+**Photo mode** — captures a full-resolution photo with the HUD composited directly onto the image before saving to Photos.
+
+**Video mode** — records 720p H.264 video with the HUD composited onto every frame in real time using `AVCaptureVideoDataOutput` + `AVAssetWriter` + `CoreImage`. Audio is recorded and muxed into the `.mov` file. The composited HUD matches the live overlay layout for whichever orientation the recording was started in.
+
+**Auto-orientation** — the capture pipeline and live preview automatically follow device orientation (portrait, landscape left, landscape right). Orientation is locked for the duration of a video recording. Controls float at the **bottom** in portrait and on the **right side** in landscape at 30% opacity over the camera frame.
+
+Controls: mode toggle (photo ↔ video), shutter/record button, camera flip. A blinking "REC" indicator appears during video recording and a toast confirms save status.
+
 ### About
 Displays app version, build number, vehicle compatibility, and copyright information.
 
@@ -87,7 +110,9 @@ Displays app version, build number, vehicle compatibility, and copyright informa
 - An ELM327-compatible Bluetooth LE OBD-II adapter (tested with IOS-Vlink / Vgate iCar Pro)
 - Jeep Wrangler JK (2011–2018), or use Simulator Mode
 - Location permission (When In Use) for GPS heading, altitude, and coordinates
-- Photo Library add-only permission for swipe-down screenshots
+- Photo Library add-only permission for screenshots and Bro Cam saves
+- Camera permission for Bro Cam photo and video capture
+- Microphone permission for Bro Cam video audio
 - No additional permissions required for pitch/roll (CoreMotion)
 
 ---
@@ -96,11 +121,12 @@ Displays app version, build number, vehicle compatibility, and copyright informa
 
 | Layer | Technology |
 |---|---|
-| UI | SwiftUI — declarative four-tab interface (TTE / Data / Settings / About) |
+| UI | SwiftUI — declarative five-tab interface (TTE / Data / Bro Cam / Settings / About) |
 | Storage | SwiftData — on-device persistent log storage |
 | BLE | CoreBluetooth — scanning, connection, ELM327 AT init, ISO 15765-4 multi-frame parsing |
 | GPS | CoreLocation — `LocationManager`; background-capable, 10-second SwiftData snapshots |
 | IMU | CoreMotion — `MotionManager`; pitch & roll at 10 Hz, no permissions required |
+| Camera | AVFoundation — `CameraManager`; `AVCaptureSession` (720p), `AVCaptureVideoDataOutput` + `AVAssetWriter` for HUD-composited video, `AVCapturePhotoOutput` for HUD-composited photos; auto-orientation via `UIDevice.orientationDidChangeNotification` |
 | State | `@Observable` managers injected via the SwiftUI environment |
 | Constants | Centralised `Constants.swift` — no magic numbers or string literals in call sites |
 | Debug output | `wbLog()` gated on `AppConstants.verboseLogging` — silence all console output by flipping one constant |

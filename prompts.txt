@@ -1,0 +1,28 @@
+Add a feature to the TTE View when a user swipes down on TTE View:
+- Flashes the screen
+- Makes a camera photo sound
+- Takes a screenshot of the whole screen
+- Saves it to the user's photos
+- Update all the permissions and security settings to allow access to user's photos
+- Update the changelog and readme to reflect these updates.
+- Analyze your changes and debug if necessary.
+
+
+
+Add a new feature to the app allowing the user to:
+- Open a camera view.
+- Take a photo or video.
+- Overlay all the values from the TTE view on the video or photo, like a heads-up display. The values should be overlayed like a border around the edge of the video or photo.
+- Saves it to the user's photos
+- Put a Camera icon as the center item in the tab bar. Call it "Bro Cam"
+- Update all the permissions and security settings to allow access to user's photos
+- Update the changelog and readme to reflect these updates.
+- Analyze your changes and debug if necessary.
+
+Users should have a camera control to flip the orientation of the camera from portrait to landscape by touching a
+  "flip icon" - this should work in both photo and video. 
+
+
+- The BroCam needs to let users rotate the phone orientation and capture photos and video in the phone's current orientation. The heads-up display values should be responsive to rotate with the orientation so they are always upright and fit in the view and the captured video overlay.
+- When in landscape, the BroCam view video controls need to be on one side of the view. When in portrait the controls need to be at the bottom of the view.
+Ask any clarifying questions as needed.

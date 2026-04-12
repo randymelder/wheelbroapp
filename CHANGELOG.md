@@ -7,6 +7,23 @@ All notable changes to WheelBro are documented here.
 ## [Unreleased]
 
 ### Added
+- **Bro Cam tab** — new centre tab (index 2) with a `camera.aperture` icon. Provides a full-screen camera view with a live telemetry HUD overlaid as a border around the frame. Settings and About shift to tabs 3 and 4.
+- **HUD border overlay** — semi-transparent edge strips display live telemetry over the camera preview:
+  - *Top bar*: Time to Empty, connection status, speed
+  - *Left strip*: Fuel Level, Distance to Empty, Diagnostics (CLEAR / FAULT)
+  - *Right strip*: Pitch, Roll, Heading
+  - *Bottom bar*: Altitude, Latitude, Longitude
+- **Photo capture with HUD compositing** — tapping the shutter button captures a full-resolution photo and composites the HUD image directly onto it before saving to Photos.
+- **Video recording with HUD compositing** — tapping the record button starts `AVCaptureVideoDataOutput` + `AVAssetWriter` recording at 720p. The HUD is rendered via `UIGraphicsImageRenderer` at 4 fps and composited onto every video frame using `CIFilter.sourceOverCompositing()` before writing. Audio is captured and muxed into the `.mov` file.
+- **Mode toggle** — switches between Photo and Video capture. Disabled while recording.
+- **Camera flip** — toggles front/back camera. Disabled while recording.
+- **Recording indicator** — blinking red "REC" capsule appears in the top-right corner during video recording.
+- **Save status toast** — animated top banner confirms "Saving…", "Saved to Photos", or "Save Failed" after each capture.
+- **Camera permission denied view** — if camera access is denied, a full-screen prompt with an "Open iOS Settings" button is shown.
+- **`CameraManager`** — new `@Observable` manager owning `AVCaptureSession`, photo output, video data output, audio data output, and `AVAssetWriter`. HUD compositing runs on a dedicated serial write queue; the pixel buffer pool from `AVAssetWriterInputPixelBufferAdaptor` is used for zero-allocation frame output.
+- **`HUDValues` struct** — lightweight value bundle passed from `BroCamView` to `CameraManager` at ~4 fps. Decouples the SwiftUI view layer from the video pipeline.
+- **`CameraPreviewView`** — `UIViewRepresentable` wrapping `AVCaptureVideoPreviewLayer` via `layerClass` override.
+- **`Info.plist`**: `NSCameraUsageDescription`, `NSMicrophoneUsageDescription`
 - **GPS location collection** — `LocationManager` wraps `CLLocationManager` and collects latitude, longitude, heading, and altitude continuously in the foreground and background (while app is running). A 10-second timer snapshots values to SwiftData as `LogEntry` rows (key/value/pid pattern, `pid = "GPS"`). Collection is independent of the OBD logging toggle — it starts automatically once location permission is granted.
   - `Info.plist`: `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription`, `UIBackgroundModes → location`
   - `CLLocationManager` settings: `desiredAccuracy = kCLLocationAccuracyBest`, `allowsBackgroundLocationUpdates = true`, `pausesLocationUpdatesAutomatically = false`
@@ -30,6 +47,22 @@ All notable changes to WheelBro are documented here.
 - **Disconnect button in Settings** — full-width red button, visible only when a BLE device is connected. Displays the connected device name ("Disconnect from &lt;name&gt;").
 - **Clear log after export** — confirmation alert offered when the log export sheet is dismissed.
 - **1-second TTE heartbeat** — `.task`-based async loop increments `tickCount` every second, triggering a numeric content transition on the TTE display. Stable across re-renders (not restarted by state changes).
+
+### Added
+- **Auto-orientation for Bro Cam** — `CameraManager` registers for `UIDevice.orientationDidChangeNotification` when the session starts and automatically applies the correct `videoRotationAngle` (portrait 90°, landscapeLeft 0°, landscapeRight 180°, portraitUpsideDown 270°) to the `AVCaptureVideoDataOutput` and `AVCapturePhotoOutput` connections and to the `AVCaptureVideoPreviewLayer`. Face-up, face-down, and unknown orientations are ignored. Orientation changes are blocked during recording (asset writer dimensions are fixed for the clip duration). Tracking starts after `session.startRunning()` and is torn down in `stopSession()` and `deinit`.
+- **`CaptureManager.captureRotationAngle`** — new observed `CGFloat` property exposed to `BroCamView`; tracks the exact rotation angle independently from the `CaptureOrientation` enum (which only governs asset writer pixel dimensions). `CameraPreviewView` binds to this value so the live preview rotates in sync.
+
+### Changed
+- **HUD background panels removed** — the semi-transparent black fills behind all four HUD regions (top bar, bottom bar, left strip, right strip) have been removed from both the SwiftUI live preview and the CoreGraphics compositor used for saved photos and video frames. Telemetry text is rendered directly over the camera image.
+- **Orientation flip button hidden** — the portrait ↔ landscape toggle button is no longer shown in the controls bar. `CameraManager.toggleOrientation()` and `applyRotationAngle(_:to:)` are preserved for future use; orientation is now handled automatically by the device orientation observer.
+- **`applyOrientation(_:to:)` → `applyRotationAngle(_:to:)`** — helper refactored to accept a raw `CGFloat` angle instead of a `CaptureOrientation` enum value, making it usable for all four device orientations.
+- **`CameraConstants` enum** — centralised all magic numbers from `CameraManager.swift` and `BroCamView.swift` (video bitrate, audio sample rate, HUD proportional ratios, capture button dimensions, recording indicator geometry, toast layout, permission view layout, etc.). `VehicleConstants.metersToFeet` replaces the `3.28084` literal previously scattered across three files.
+- **Landscape HUD compositor** — `CameraManager.renderHUDImage` now branches on frame dimensions (`w > h`) to render a landscape-specific layout that matches the live SwiftUI `landscapeHUDOverlay` exactly: top bar carries 5 cells (TTE, STATUS, SPEED, PITCH, ROLL); bottom bar carries 4 cells (ALT, LAT, LON, HEADING); left strip (FUEL, DTE, DIAG) is unchanged; right strip is omitted. All cells are inset from the trailing edge by `hudLandscapeControlsRatio` (25% of frame width) to stay clear of the floating controls strip. Portrait compositing is unchanged.
+- **HUD font and padding sizing** — `renderHUDImage` now scales fonts and padding from `min(width, height)` instead of frame width. In portrait this is unchanged (min = 720). In landscape it prevents text from being 78% oversized (width was 1280; min is still 720), keeping composited HUD text consistent in size across both orientations.
+- **`CameraConstants.hudLandscapeControlsRatio`** — new constant (`0.25`) used by the CoreGraphics HUD compositor to match the proportion of frame width reserved by the floating controls strip in landscape mode.
+
+### Fixed
+- **`AVCapturePhotoOutput.isHighResolutionCaptureEnabled` deprecation** — replaced with `maxPhotoDimensions` set from `device.activeFormat.supportedMaxPhotoDimensions.last` (deprecated in iOS 16, required update for iOS 17+ target).
 
 ### Fixed (debug pass)
 - **`LocationManager` — guard logic for no-fix state** (`logCurrentLocation`): `latitude != 0.0 || longitude != 0.0` used `||`, meaning entries were logged whenever *either* coordinate was non-zero (e.g. valid locations on the equator or prime meridian would pass the wrong branch). Changed to `!(latitude == 0.0 && longitude == 0.0)` so nothing is written until a real GPS fix arrives.
