@@ -160,6 +160,21 @@ Changes requested by Randy Melder, in chronological order.
 
 ---
 
+### TTE view — fix immediate update on BLE connect and reliable 1-second ticker
+**Date/Time:** 2026-04-11
+
+**Requested:** Two bugs: (1) TTE view did not start showing values immediately after a BLE connection — values took ~10 seconds to appear. (2) TTE view was not updating every second; updates were taking ~10 seconds.
+
+**Root causes:**
+- `startPIDPolling()` used `Timer.scheduledTimer(withTimeInterval: 5.0, ...)` which does not fire until the first full interval elapses. After the AT init + VIN read sequence, the first live-data PID poll was delayed an additional 5 seconds, producing the observed ~10 second total delay.
+- `private let ticker = Timer.publish(...).autoconnect()` was declared as a property on the SwiftUI `struct` (value type). Every state change that triggers a re-render recreates the struct instance, creating a new `TimerPublisher`. With `.autoconnect()`, each new publisher restarts the 1-second countdown, so the timer reset after every tick and never delivered a second fire reliably.
+
+**Changes made:**
+- `Managers/BluetoothManager.swift` — `startPIDPolling()` now calls `pollNextPID()` once immediately before setting up the repeating timer, so live values arrive the moment polling starts.
+- `Views/TTEView.swift` — removed `import Combine` and the `private let ticker` property. Replaced `.onReceive(ticker)` with a `.task { while !Task.isCancelled { try? await Task.sleep(for: .seconds(UIConstants.tteTickInterval)); tickCount += 1 } }` block. SwiftUI's `.task` modifier pins its async context to the view's identity in the hierarchy, not to the struct instance, so it is never restarted by re-renders — only when the view appears or disappears.
+
+---
+
 ### Constants.swift — replace all magic numbers and string literals with named constants
 **Date/Time:** 2026-04-11
 
@@ -186,3 +201,105 @@ Changes requested by Randy Melder, in chronological order.
 - `Views/SettingsView.swift` — AppStorage key and vehicle name replaced.
 - `Views/AboutView.swift` — vehicle name and copyright strings replaced.
 - `Views/DataView.swift` — copyright string replaced.
+
+---
+
+### TTEView — fix values stuck at zero
+**Date/Time:** 2026-04-11
+
+**Requested:** TTE and DTE values on TTEView remained zero even when OBD data was flowing.
+
+**Root cause:** `@State private var fuelText: Double?` and `@State private var dteText: Double?` were set to `Optional(0.0)` on the first `.task` tick. The `??` operator saw a non-nil value and never fell through to `obdManager.distanceToEmpty` / `obdManager.fuelLevel`.
+
+**Changes made:**
+- `Views/TTEView.swift` — removed `fuelText` and `dteText` `@State` vars. OBD value cards now read `obdManager.distanceToEmpty` and `obdManager.fuelLevel` directly. Enhanced `statusLabel` to return "Connected — turn ignition ON" when BLE is connected but all ECU values (fuel, RPM, speed) are zero.
+
+---
+
+### BLE — fix ATSP0 failing to detect vehicle protocol (SEARCHING/STOPPED on all PIDs)
+**Date/Time:** 2026-04-11
+
+**Requested:** All OBD values stayed at zero — SEARCHING/STOPPED returned for every Mode 01 PID even with ignition on.
+
+**Root cause:** `ATSP0` (auto-detect) scans through all protocols and fails on the IOS-Vlink adapter for the Jeep Wrangler JK, returning SEARCHING indefinitely. The correct protocol must be set explicitly.
+
+**Changes made:**
+- `Constants.swift` — `ATCommand.autoProtocol` changed from `"ATSP0\r"` to `"ATSP6\r"` (ISO 15765-4 CAN, 11-bit ID, 500 kbaud — correct for Jeep JK). Added `ELM327Response.searching = "SEARCHING"` and `ELM327Response.stopped = "STOPPED"`.
+- `Managers/BluetoothManager.swift` — SEARCHING and STOPPED tokens added to the discard guard in `processLine()`. Added `consecutiveSearchingCount` to rate-limit the diagnostic warning to once on first occurrence then every 10 cycles.
+
+---
+
+### BLE — fix slow polling (1 PID per 5 s → response-driven cycling)
+**Date/Time:** 2026-04-11
+
+**Requested:** Only one PID was being queried per second; all PIDs should cycle as fast as the adapter responds.
+
+**Root cause:** `pollNextPID()` was called only by the 5-second timer. With 7 PIDs, a full cycle took ~35 s.
+
+**Changes made:**
+- `Managers/BluetoothManager.swift` — `pollNextPID()` is now called at the end of `processLine()`'s normal path (response-driven). The timer is reduced to `BLEConstants.pidPollInterval` (1.5 s) as a watchdog only — it fires when the adapter hasn't responded (e.g. NODATA with no prompt, lost packet) to prevent the cycle from stalling. `startPIDPolling()` calls `pollNextPID()` once immediately so values appear without waiting for the first timer interval.
+
+---
+
+### BLE — fix VIN not updating (race condition with response-driven polling)
+**Date/Time:** 2026-04-11
+
+**Requested:** VIN field never updated. No `[OBD VIN]` log lines appeared despite all other OBD values flowing correctly.
+
+**Root cause:** `readVIN()` was called immediately after `startPIDPolling()` in `sendNextInitCommand`. The first `pollNextPID()` call also fired immediately, sending `010C\r` and `0902\r` to the ELM327 in rapid succession. The ELM327 processed the VIN request but its multi-frame response (ISO-TP segments `0:490201…`, `1:…`, `2:…`) was displaced by the incoming polling commands and never arrived in the BLE notification buffer.
+
+**Changes made:**
+- `Managers/BluetoothManager.swift`:
+  - `OBDCommand.requestVIN` appended to `pidSequence` as the 8th entry, so VIN is requested once per full poll cycle (~8 responses) rather than as a fire-and-forget one-shot.
+  - `readVIN()` call removed from `sendNextInitCommand()`; `readVIN()` helper left in place but is no longer called.
+  - Added multi-frame VIN parsing in `parseOBDLine()`: single-frame `490201XX…`, first-frame `0:4902XX…`, continuation frames `N:XX…`, and ISO-TP byte-count header silencer (`014`, `008`, etc.).
+  - Added `decodeVINHex(_ hex: String)` helper that converts hex pairs to ASCII and calls `updateFromOBD(key: OBDKey.vin, value:)` once ≥10 valid characters are decoded.
+  - Added `vinFrameBuffer: String` and `isCapturingVIN: Bool` private state; both reset in `disconnect()`.
+  - Data-flow comment at top of file updated to describe VIN-in-cycle approach.
+
+---
+
+### BLE — fix VIN displaying garbage characters (0xFF fill bytes from ECU)
+**Date/Time:** 2026-04-11
+
+**Requested:** VIN updated but displayed "ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ" — garbage characters.
+
+**Root cause:** The Jeep JK ECU returns `NODI=0x00` and all `0xFF` fill bytes for Mode 09 PID 02, indicating the VIN is not stored in the OBD-II VIN register. `decodeVINHex` only filtered null bytes (`byte > 0`); `0xFF` = 255 passed through and decoded to the `ÿ` character (U+00FF).
+
+**Changes made:**
+- `Managers/BluetoothManager.swift` — `decodeVINHex` guard changed from `byte > 0` to `byte >= 0x20, byte < 0x7F` (printable ASCII range). Added an explicit branch: if `vinStr` is empty after filtering fill bytes, logs the issue and sets VIN to `"Not available"` rather than leaving the field blank.
+
+---
+
+### DataView — fix export share sheet failing with NSCocoaErrorDomain Code=256
+**Date/Time:** 2026-04-11
+
+**Requested:** Tapping "Discover PIDs" produced errors: `Failed to request default share mode for fileURL ... Code=-10814` and `error fetching item for URL ... NSCocoaErrorDomain Code=256 "The file couldn't be opened."` The share sheet never appeared.
+
+**Root cause:** `UIActivityViewController` was given a sandboxed `file://` URL to the app's Documents directory. The system's share sheet process cannot read that URL directly — it fails with `NSFileReadUnknownError (256)`. The `NSOSStatusErrorDomain Code=-10814` (LaunchServices) is a secondary symptom: the system couldn't find a default app handler for `.txt` via the file URL path.
+
+**Changes made:**
+- `Views/DataView.swift` — replaced file-write + file-URL pattern with `NSItemProvider(item: csv as NSString, typeIdentifier: "public.plain-text")` + `provider.suggestedName`. The CSV content is passed inline to `UIActivityViewController`; no file is written to disk. `suggestedName` is used by Files.app as the default save name (`wheelbro_log_*.txt` / `wheelbro_discovery_*.txt`). State vars changed from `exportURL: URL?` / `discoveryURL: URL?` to `exportItems: [Any]` / `discoveryItems: [Any]`. Applied to both the log export and the discovery export paths.
+
+---
+
+### Logging default off; console output gated on AppConstants.verboseLogging
+**Date/Time:** 2026-04-11
+
+**Requested:** Data logging should be disabled by default. All console `print()` messages should be toggleable via a single bool constant in `Constants.swift`.
+
+**Changes made:**
+- `Constants.swift` — added `enum AppConstants` with `static let verboseLogging: Bool = true`. Added top-level `func wbLog(_ message: String)` marked `@inline(__always)` — a drop-in for `print` that no-ops when `verboseLogging` is `false`.
+- `Managers/BluetoothManager.swift` — all `print(` calls replaced with `wbLog(` (32 call sites).
+- `Managers/OBDDataManager.swift` — all `print(` calls replaced with `wbLog(` (6 call sites). `init` now explicitly writes `false` to `UserDefaultsKey.isLoggingEnabled` on first launch (matching the pattern used for `isSimulatorOn`), making the off-by-default intent unambiguous.
+
+---
+
+### TTEView — no-connection overlay with Settings navigation
+**Date/Time:** 2026-04-11
+
+**Requested:** When the user opens the TTE tab and no BLE device is connected (and simulator is off), warn them and show the Settings view.
+
+**Changes made:**
+- `Views/TTEView.swift` — added `@Binding var selectedTab: Int`. Added `isDisconnected` computed property (`!obdManager.isSimulatorOn && !bleManager.isConnected`). Added `disconnectedOverlay` sub-view: a semi-transparent dark overlay with a red bolt icon, explanatory text, and a yellow "Open Settings" button that sets `selectedTab = Tab.settings`. Overlay applied via `.overlay { if isDisconnected { disconnectedOverlay } }` with a fade transition. Preview updated to supply `.constant(Tab.tte)`.
+- `Views/ContentView.swift` — `TTEView()` updated to `TTEView(selectedTab: $selectedTab)` to pass the binding.
