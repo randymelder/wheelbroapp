@@ -295,6 +295,28 @@ Changes requested by Randy Melder, in chronological order.
 
 ---
 
+### GPS location collection — background, 10-second logging
+**Date/Time:** 2026-04-11
+
+**Requested:** Add a background job to collect latitude, longitude, heading (direction), and altitude every 10 seconds while the app is open. Include all required iOS permission and security requirements.
+
+**Changes made:**
+- `Info.plist` — added `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription`, and `UIBackgroundModes → location`. The background modes key is required for `allowsBackgroundLocationUpdates = true` to take effect.
+- `Constants.swift` — added `VehicleConstants.locationLoggingInterval = 10.0`. Added `OBDKey.latitude`, `OBDKey.longitude`, `OBDKey.heading`, `OBDKey.altitude`. Added `OBDLogPID.gps = "GPS"` shared by all four location log rows.
+- `Managers/LocationManager.swift` — new `@Observable` class wrapping `CLLocationManager`:
+  - `desiredAccuracy = kCLLocationAccuracyBest`, `distanceFilter = kCLDistanceFilterNone`
+  - `allowsBackgroundLocationUpdates = true`, `pausesLocationUpdatesAutomatically = false`
+  - `setup(modelContext:)` — called from ContentView; triggers the iOS permission prompt on first launch or calls `startUpdating()` immediately if already authorized
+  - `startUpdating()` — calls both `startUpdatingLocation()` and `startUpdatingHeading()`; arms the 10-second logging timer
+  - `locationManagerDidChangeAuthorization` — automatically starts/stops updating based on granted status
+  - `didUpdateLocations` — updates `latitude`, `longitude`, `altitude`
+  - `didUpdateHeading` — uses `trueHeading` when calibrated (≥ 0), falls back to `magneticHeading`
+  - 10-second `locationLogTimer` — independent of OBD logging toggle; writes four `LogEntry` rows per tick (one per GPS field) with `pid = "GPS"`, `bleDeviceName = "GPS"`
+  - All console output via `wbLog()`
+- `ContentView.swift` — added `@State private var locationManager = LocationManager()`. Calls `locationManager.setup(modelContext: modelContext)` in `.task`. Injects into SwiftUI environment via `.environment(locationManager)`. Preview updated.
+
+---
+
 ### TTEView — no-connection overlay with Settings navigation
 **Date/Time:** 2026-04-11
 

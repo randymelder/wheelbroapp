@@ -7,6 +7,13 @@ All notable changes to WheelBro are documented here.
 ## [Unreleased]
 
 ### Added
+- **GPS location collection** — `LocationManager` wraps `CLLocationManager` and collects latitude, longitude, heading, and altitude continuously in the foreground and background (while app is running). A 10-second timer snapshots values to SwiftData as `LogEntry` rows (key/value/pid pattern, `pid = "GPS"`). Collection is independent of the OBD logging toggle — it starts automatically once location permission is granted.
+  - `Info.plist`: `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription`, `UIBackgroundModes → location`
+  - `CLLocationManager` settings: `desiredAccuracy = kCLLocationAccuracyBest`, `allowsBackgroundLocationUpdates = true`, `pausesLocationUpdatesAutomatically = false`
+  - Uses true heading when calibrated; falls back to magnetic heading
+  - New constants: `VehicleConstants.locationLoggingInterval`, `OBDKey.latitude/longitude/heading/altitude`, `OBDLogPID.gps`
+- **Pitch / Roll (IMU)** — `MotionManager` wraps `CMMotionManager` and exposes device pitch and roll in degrees at 10 Hz. No permissions required. Pitch positive = nose up (climbing); roll unit label shows Right/Left based on sign.
+- **TTE view — GPS and IMU cards** — six new cards added to the grid: Pitch, Roll, Heading (with cardinal compass point as unit), Altitude (ft), Latitude (N/S), Longitude (E/W). Heading shows `—` before the first GPS fix.
 - **No-connection overlay on TTE tab** — when BLE is disconnected and Simulator is off, a full-screen overlay with a red indicator and "Open Settings" button appears. Tapping the button navigates directly to the Settings tab.
 - **`AppConstants.verboseLogging`** — single bool constant in `Constants.swift` that gates all console debug output. Set to `false` to silence every `wbLog()` call at zero cost (`@inline(__always)`).
 - **`wbLog()` helper** — drop-in replacement for `print()` throughout both manager files. All 38 call sites replaced.
@@ -17,6 +24,13 @@ All notable changes to WheelBro are documented here.
 - **Disconnect button in Settings** — full-width red button, visible only when a BLE device is connected.
 - **Clear log after export** — confirmation alert offered when the log export sheet is dismissed.
 - **1-second TTE heartbeat** — `.task`-based async loop increments `tickCount` every second, triggering a numeric content transition on the TTE display. Stable across re-renders (not restarted by state changes).
+
+### Fixed (debug pass)
+- **`LocationManager` — guard logic for no-fix state** (`logCurrentLocation`): `latitude != 0.0 || longitude != 0.0` used `||`, meaning entries were logged whenever *either* coordinate was non-zero (e.g. valid locations on the equator or prime meridian would pass the wrong branch). Changed to `!(latitude == 0.0 && longitude == 0.0)` so nothing is written until a real GPS fix arrives.
+- **`TTEView` — heading guard condition** (`headingText`): guard used `||` and checked `latitude != 0` as a proxy for a GPS fix, which is not reliable (negative latitudes are valid). Replaced with `isAuthorized && !(latitude == 0.0 && longitude == 0.0)` — heading shows `—` until the first real fix.
+- **`MotionManager` — double-start guard** (`startUpdates`): calling `startUpdates()` twice registered a second `CMDeviceMotion` update handler while the first remained active, leaking update callbacks and doubling CPU work. Added `guard !cmManager.isDeviceMotionActive` early exit.
+- **`ContentView` preview — spurious `LocationManager` override**: the `#Preview` block explicitly injected `.environment(LocationManager())`, overriding the `@State private var locationManager` that `ContentView` already owns and starts. The injected instance was never started, so preview GPS state would always be uninitialized. Removed the redundant injection.
+- **`ContentView` — `MotionManager` ran at 10 Hz in the background**: no scene-phase observer existed to pause the IMU when the app was backgrounded. Added `.onChange(of: scenePhase)` — `MotionManager.stopUpdates()` on `.background`, `startUpdates()` on `.active`. `LocationManager` is intentionally left running in the background via the `UIBackgroundModes/location` entitlement.
 
 ### Changed
 - **OBD protocol: `ATSP0` → `ATSP6`** — hardcoded to ISO 15765-4 CAN, 11-bit ID, 500 kbaud (the correct protocol for Jeep Wrangler JK). `ATSP0` (auto-detect) caused indefinite `SEARCHING…` / `STOPPED` responses on the IOS-Vlink adapter with this vehicle.

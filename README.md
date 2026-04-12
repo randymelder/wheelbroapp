@@ -11,6 +11,12 @@ The primary screen shows a large, animated **Time to Empty** countdown calculate
 
 - **Distance to Empty** (miles)
 - **Fuel Level** (%)
+- **Speed** (mph)
+- **Pitch** — front-to-back tilt in degrees (Up / Down); useful for trail incline awareness
+- **Roll** — side-to-side tilt in degrees (Right / Left)
+- **Heading** — degrees true north with cardinal compass point (N, NE, E … NW)
+- **Altitude** (ft)
+- **Latitude** / **Longitude** — 5 decimal-place precision with hemisphere indicator
 - **Diagnostic Trouble Codes** — live DTC list with fault/clear indicator
 - **VIN** — decoded from OBD-II Mode 09
 
@@ -30,6 +36,17 @@ The status banner adapts to connection state:
 - **Export** via the native iOS share sheet as a `.txt` file (iCloud Drive / Files app compatible)
 - Option to clear the log automatically after a successful export
 - Session tracking with row and session count badges
+
+### GPS & IMU Sensors
+Live sensor data collected independently of the OBD connection:
+
+- **Heading** — degrees true north (falls back to magnetic when uncalibrated); shown with cardinal compass label
+- **Altitude** — metres from GPS, displayed in feet on the TTE screen
+- **Latitude / Longitude** — WGS84 decimal degrees at 5 decimal-place precision (~1 m)
+- **Pitch** — front-to-back tilt angle in degrees from the iPhone accelerometer; positive = nose up (climbing)
+- **Roll** — side-to-side tilt angle in degrees; positive = right side higher
+
+GPS data is logged to SwiftData every 10 seconds (independent of the OBD logging toggle) once location permission is granted. Background collection continues while the app is running. Pitch and roll are provided by `CMMotionManager` at 10 Hz with no additional permissions required.
 
 ### PID Discovery
 Connect your OBD dongle and tap **Discover PIDs** to run a two-phase live query:
@@ -67,6 +84,8 @@ Displays app version, build number, vehicle compatibility, and copyright informa
 - Xcode 15+
 - An ELM327-compatible Bluetooth LE OBD-II adapter (tested with IOS-Vlink / Vgate iCar Pro)
 - Jeep Wrangler JK (2011–2018), or use Simulator Mode
+- Location permission (When In Use) for GPS heading, altitude, and coordinates
+- No additional permissions required for pitch/roll (CoreMotion)
 
 ---
 
@@ -77,6 +96,8 @@ Displays app version, build number, vehicle compatibility, and copyright informa
 | UI | SwiftUI — declarative four-tab interface (TTE / Data / Settings / About) |
 | Storage | SwiftData — on-device persistent log storage |
 | BLE | CoreBluetooth — scanning, connection, ELM327 AT init, ISO 15765-4 multi-frame parsing |
+| GPS | CoreLocation — `LocationManager`; background-capable, 10-second SwiftData snapshots |
+| IMU | CoreMotion — `MotionManager`; pitch & roll at 10 Hz, no permissions required |
 | State | `@Observable` managers injected via the SwiftUI environment |
 | Constants | Centralised `Constants.swift` — no magic numbers or string literals in call sites |
 | Debug output | `wbLog()` gated on `AppConstants.verboseLogging` — silence all console output by flipping one constant |
