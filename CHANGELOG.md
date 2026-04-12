@@ -13,7 +13,13 @@ All notable changes to WheelBro are documented here.
   - Uses true heading when calibrated; falls back to magnetic heading
   - New constants: `VehicleConstants.locationLoggingInterval`, `OBDKey.latitude/longitude/heading/altitude`, `OBDLogPID.gps`
 - **Pitch / Roll (IMU)** — `MotionManager` wraps `CMMotionManager` and exposes device pitch and roll in degrees at 10 Hz. No permissions required. Pitch positive = nose up (climbing); roll unit label shows Right/Left based on sign.
-- **TTE view — GPS and IMU cards** — six new cards added to the grid: Pitch, Roll, Heading (with cardinal compass point as unit), Altitude (ft), Latitude (N/S), Longitude (E/W). Heading shows `—` before the first GPS fix.
+- **Double-tap screenshot on TTE view** — double-tapping the large TTE countdown captures the full window, plays the system camera shutter sound, triggers a white screen flash, and saves the image to the user's Photo Library.
+  - `Info.plist`: `NSPhotoLibraryAddUsageDescription` (add-only; no read access requested)
+  - Permission requested at save time via `PHPhotoLibrary.requestAuthorization(for: .addOnly)`; both `.authorized` and `.limited` statuses are accepted
+  - Screenshot captured with `UIGraphicsImageRenderer` + `drawHierarchy(afterScreenUpdates: false)` before the flash overlay is applied, so the saved image is clean
+  - Shutter sound via `AudioServicesPlaySystemSound(1108)`; respects the device silent switch (iOS-enforced)
+  - Flash: `Color.white` overlay animates in over 0.05 s, holds 0.15 s, fades out over 0.3 s
+- **TTE view — GPS and IMU cards** — Heading (with cardinal compass point as unit), Altitude (ft), Latitude (N/S), and Longitude (E/W) cards added to the grid. Heading shows `—` before the first GPS fix. Pitch and Roll share a single combined card (see Changed).
 - **No-connection overlay on TTE tab** — when BLE is disconnected and Simulator is off, a full-screen overlay with a red indicator and "Open Settings" button appears. Tapping the button navigates directly to the Settings tab.
 - **`AppConstants.verboseLogging`** — single bool constant in `Constants.swift` that gates all console debug output. Set to `false` to silence every `wbLog()` call at zero cost (`@inline(__always)`).
 - **`wbLog()` helper** — drop-in replacement for `print()` throughout both manager files. All 38 call sites replaced.
@@ -33,6 +39,9 @@ All notable changes to WheelBro are documented here.
 - **`ContentView` — `MotionManager` ran at 10 Hz in the background**: no scene-phase observer existed to pause the IMU when the app was backgrounded. Added `.onChange(of: scenePhase)` — `MotionManager.stopUpdates()` on `.background`, `startUpdates()` on `.active`. `LocationManager` is intentionally left running in the background via the `UIBackgroundModes/location` entitlement.
 
 ### Changed
+- **Pitch / Roll — combined card** — Pitch and Roll are now displayed in a single grid card side-by-side, separated by a faint yellow divider. Values use a smaller 22pt font with Up/Down and Right/Left labels underneath each reading. Frees one grid slot and reduces vertical scroll length.
+- **Screenshot trigger: swipe-down → double-tap TTE** — the screenshot action moved from a swipe-down drag gesture (which caused the ScrollView to rubber-band/bounce) to a double-tap on the large TTE countdown display.
+- **TTE logo removed** — the `wheelbro_logo` image between the status banner and TTE display has been hidden to reduce vertical height on the primary screen.
 - **OBD protocol: `ATSP0` → `ATSP6`** — hardcoded to ISO 15765-4 CAN, 11-bit ID, 500 kbaud (the correct protocol for Jeep Wrangler JK). `ATSP0` (auto-detect) caused indefinite `SEARCHING…` / `STOPPED` responses on the IOS-Vlink adapter with this vehicle.
 - **Response-driven PID polling** — each valid OBD response immediately triggers the next `pollNextPID()` call. The 5-second timer is replaced by a 1.5-second watchdog that fires only when the adapter goes silent (lost packet, `NODATA` without prompt). Cycles through all PIDs as fast as the adapter responds.
 - **VIN integrated into poll cycle** — `OBDCommand.requestVIN` added as the 8th entry in `pidSequence`. Eliminates the race condition where a simultaneous one-shot `readVIN()` + `pollNextPID()` caused the ELM327 to drop the multi-frame ISO-TP VIN response.

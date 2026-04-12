@@ -22,6 +22,8 @@ The primary screen shows a large, animated **Time to Empty** countdown calculate
 
 When no BLE device is connected and Simulator mode is off, a full-screen overlay prompts the user to connect a device and navigates directly to Settings.
 
+**Swipe down** anywhere on the TTE screen to take a screenshot: the shutter sound plays, the screen flashes white, and the image is saved directly to your Photo Library (add-only permission — no read access to existing photos).
+
 The status banner adapts to connection state:
 - `Simulator ON` — simulator is active
 - `Connected to <device>` — BLE connected, ECU responding
@@ -85,6 +87,7 @@ Displays app version, build number, vehicle compatibility, and copyright informa
 - An ELM327-compatible Bluetooth LE OBD-II adapter (tested with IOS-Vlink / Vgate iCar Pro)
 - Jeep Wrangler JK (2011–2018), or use Simulator Mode
 - Location permission (When In Use) for GPS heading, altitude, and coordinates
+- Photo Library add-only permission for swipe-down screenshots
 - No additional permissions required for pitch/roll (CoreMotion)
 
 ---
