@@ -6,7 +6,13 @@ All notable changes to WheelBro are documented here.
 
 ## [Unreleased]
 
+### Changed
+- **Data tab hidden** — `DataView` removed from the tab bar; the file is retained for future use. Tab bar is now four tabs: TTE (0), Bro Cam (2), Settings (3), About (4).
+- **Settings tab order** — Simulator section moved below BLE Devices (Vehicle → BLE Devices → Simulator).
+- **`SettingsView` — `selectedTab` binding wired up** — `ContentView` now passes `$selectedTab` to `SettingsView`. Tapping a BLE device in the list connects and navigates directly to the TTE tab (`Tab.tte`).
+
 ### Added
+- **Map tab** — new 2nd-position tab (tag 5) presenting a full-screen satellite map with live location tracking. Features: system blue-dot `UserAnnotation` auto-recentering via `MapCameraPosition.userLocation`; satellite/standard style toggle; two share buttons (Google Maps URL + plain-text coordinates via `ShareLink`); "Location not found" banner with disabled share when GPS is unavailable; tab bar hidden while active; Close button returns to TTE tab. Google Maps URL used in place of `maps.apple.com` — iMessage on macOS hard-codes the Apple Maps domain to a non-interactive card; a `google.com/maps?q=lat,lon` URL renders as a standard clickable hyperlink on all platforms and still offers to open in Maps on iOS.
 - **Bro Cam tab** — new centre tab (index 2) with a `camera.aperture` icon. Provides a full-screen camera view with a live telemetry HUD overlaid as a border around the frame. Settings and About shift to tabs 3 and 4.
 - **HUD border overlay** — semi-transparent edge strips display live telemetry over the camera preview:
   - *Top bar*: Time to Empty, connection status, speed
