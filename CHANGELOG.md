@@ -6,6 +6,12 @@ All notable changes to WheelBro are documented here.
 
 ## [Unreleased]
 
+### Added
+- **`VehicleProfile` model** — new `struct` (`id`, `name`, `tankGallons`, `avgMPG`, `obdProtocol`, `protocolDescription`) that describes a supported vehicle and its OBD-II physical-layer protocol. Adding a new vehicle requires only a new `VehicleProfile` entry in `VehicleProfile.all` — no other code changes needed.
+- **Vehicle picker in Settings** — a `Picker` at the top of the Settings tab lets the user select from the supported vehicle list. Selection is persisted to `UserDefaults` (`UserDefaultsKey.selectedVehicle`) and survives app restarts.
+- **Auto Detect vehicle profile** — `VehicleProfile.autoDetect` uses `ATSP0` so the ELM327 probes all protocols automatically. The adapter works through CAN variants first, then ISO/KWP, PWM, and VPW. A failure alert is shown if all protocols are exhausted without a response. TTE/DTE fall back to generic values (18.6 gal / 15 MPG).
+- **TTE/DTE calculations driven by selected vehicle** — `OBDDataManager` reads `selectedProfile.tankGallons` and `selectedProfile.avgMPG` for all fuel-range math, replacing the previously hardcoded constants.
+
 ### Changed
 - **Data tab hidden** — `DataView` removed from the tab bar; the file is retained for future use. Tab bar is now four tabs: TTE (0), Bro Cam (2), Settings (3), About (4).
 - **Settings tab order** — Simulator section moved below BLE Devices (Vehicle → BLE Devices → Simulator).

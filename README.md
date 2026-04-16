@@ -20,7 +20,7 @@ The primary screen shows a large, animated **Time to Empty** countdown calculate
 - **Diagnostic Trouble Codes** — live DTC list with fault/clear indicator
 - **VIN** — decoded from OBD-II Mode 09
 
-When no BLE device is connected and Simulator mode is off, a full-screen overlay prompts the user to connect a device and navigates directly to Settings.
+When no BLE device is connected and Simulator mode is off, a full-screen overlay prompts the user to connect a device or ignore and stay on the TTE screen.
 
 **Double-tap** the large TTE countdown to take a screenshot: the shutter sound plays, the screen flashes white, and the image is saved directly to your Photo Library (add-only permission — no read access to existing photos).
 
@@ -32,12 +32,10 @@ The status banner adapts to connection state:
 
 ### Data & Logging
 - Automatic data logging — one row per OBD key every 10 seconds, stored locally via SwiftData
-- **Logging is disabled by default** — enable in Settings
 - Log auto-purge: entries older than 1 hour are removed automatically
 - Browsable log preview showing the 30 most recent entries with key, PID, value, and timestamp
 - **Export** via the native iOS share sheet as a `.txt` file (iCloud Drive / Files app compatible)
 - Option to clear the log automatically after a successful export
-- Session tracking with row and session count badges
 
 ### GPS & IMU Sensors
 Live sensor data collected independently of the OBD connection:
@@ -48,7 +46,7 @@ Live sensor data collected independently of the OBD connection:
 - **Pitch** — front-to-back tilt angle in degrees from the iPhone accelerometer; positive = nose up (climbing)
 - **Roll** — side-to-side tilt angle in degrees; positive = right side higher
 
-GPS data is logged to SwiftData every 10 seconds (independent of the OBD logging toggle) once location permission is granted. Background collection continues while the app is running. Pitch and roll are provided by `CMMotionManager` at 10 Hz with no additional permissions required.
+GPS collection starts automatically once location permission is granted and continues in the background while the app is running. Pitch and roll are provided by `CMMotionManager` at 10 Hz with no additional permissions required. IMU updates are paused when the app is backgrounded and resume when it returns to the foreground.
 
 ### PID Discovery
 Connect your OBD dongle and tap **Discover PIDs** to run a two-phase live query:
@@ -58,20 +56,21 @@ Connect your OBD dongle and tap **Discover PIDs** to run a two-phase live query:
 Results (PID code, description, live value) export as a `.txt` file via the share sheet.
 
 ### Bluetooth (BLE) Management
-- Scan for **all** nearby Bluetooth LE peripherals (no service-UUID filter)
-- Device list sorted alphabetically by name
+- Scans for nearby Bluetooth LE peripherals; filters to IOS-Vlink / vLink-compatible adapters
+- Device list sorted alphabetically by name; shows RSSI and UUID prefix
 - One-tap connect / full-width disconnect button (visible only when connected)
-- Hardcoded protocol: **ATSP6** (ISO 15765-4 CAN, 11-bit ID, 500 kbaud) — the correct protocol for Jeep Wrangler JK; avoids the indefinite SEARCHING loop caused by auto-detect (`ATSP0`)
+- Protocol set per **vehicle profile** — Jeep Wrangler JK uses `ATSP6` (ISO 15765-4 CAN, 11-bit ID, 500 kbaud) to avoid the indefinite SEARCHING loop caused by `ATSP0`; Auto Detect probes up to 9 protocols (CAN variants first) and shows a failure alert if none respond (up to ~27 seconds)
 - Response-driven PID polling — each OBD response immediately triggers the next command, cycling through all PIDs as fast as the adapter responds
+- 1.5-second watchdog timer re-triggers polling if the adapter goes silent
 - "Test OBD Data" command for validating a new connection
 
 ### Simulator Mode
 Toggle a built-in data simulator that generates realistic OBD values every 5 seconds — no vehicle or dongle required. Simulator is **on by default** on first launch. Useful for development and UI testing.
 
 ### Settings
+- **Vehicle picker** — select from supported vehicle profiles (Jeep Wrangler JK, Auto Detect); selection persists across launches and drives all TTE/DTE fuel-range calculations
 - Simulator mode toggle (on by default)
 - BLE device scanner and connection manager
-- Data logging toggle (off by default)
 - PID Discovery tool
 - "Test OBD Data" diagnostic command
 
@@ -130,21 +129,22 @@ Displays app version, build number, vehicle compatibility, and copyright informa
 
 | Layer | Technology |
 |---|---|
-| UI | SwiftUI — declarative five-tab interface (TTE / Map / Bro Cam / Settings / About) |
-| Storage | SwiftData — on-device persistent log storage |
+| UI | SwiftUI — five-tab interface (TTE / Map / Bro Cam / Settings / About); forced dark theme |
+| Storage | SwiftData — on-device persistent log storage with 1-hour auto-purge |
 | BLE | CoreBluetooth — scanning, connection, ELM327 AT init, ISO 15765-4 multi-frame parsing |
-| GPS | CoreLocation — `LocationManager`; background-capable, 10-second SwiftData snapshots |
-| IMU | CoreMotion — `MotionManager`; pitch & roll at 10 Hz, no permissions required |
+| GPS | CoreLocation — `LocationManager`; background-capable live collection |
+| IMU | CoreMotion — `MotionManager`; pitch & roll at 10 Hz, paused in background |
 | Camera | AVFoundation — `CameraManager`; `AVCaptureSession` (720p), `AVCaptureVideoDataOutput` + `AVAssetWriter` for HUD-composited video, `AVCapturePhotoOutput` for HUD-composited photos; auto-orientation via `UIDevice.orientationDidChangeNotification` |
+| Vehicle Profiles | `VehicleProfile` model — encapsulates tank size, avg MPG, and OBD protocol per vehicle; extensible by adding entries to `VehicleProfile.all` |
 | State | `@Observable` managers injected via the SwiftUI environment |
 | Constants | Centralised `Constants.swift` — no magic numbers or string literals in call sites |
 | Debug output | `wbLog()` gated on `AppConstants.verboseLogging` — silence all console output by flipping one constant |
 
 ### BLE / OBD Data Flow
 
-1. User taps **Scan** → `BluetoothManager` discovers all nearby BLE peripherals
+1. User taps **Scan** → `BluetoothManager` discovers nearby vLink-compatible BLE peripherals
 2. User taps a device → CoreBluetooth connects; services and characteristics are discovered
-3. `initializeOBDDongle()` sends the AT command sequence: ATZ → ATE0 → ATL0 → ATS0 → ATH0 → **ATSP6** → ATAT1
+3. `initializeOBDDongle()` sends the AT command sequence: ATZ → ATE0 → ATL0 → ATS0 → ATH0 → **ATSP\*** (per vehicle profile) → ATAT1
 4. Response-driven polling begins, cycling: RPM → Speed → Fuel → Coolant → Oil Temp → Battery Voltage → DTCs → VIN → (repeat)
 5. Each parsed value is forwarded to `OBDDataManager` via `updateFromOBD(key:value:)`
 6. SwiftUI views observe `OBDDataManager` via `@Observable` and re-render automatically
