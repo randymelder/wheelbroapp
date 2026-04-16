@@ -22,7 +22,7 @@ The primary screen shows a large, animated **Time to Empty** countdown calculate
 
 When no BLE device is connected and Simulator mode is off, a full-screen overlay prompts the user to connect a device and navigates directly to Settings.
 
-**Swipe down** anywhere on the TTE screen to take a screenshot: the shutter sound plays, the screen flashes white, and the image is saved directly to your Photo Library (add-only permission — no read access to existing photos).
+**Double-tap** the large TTE countdown to take a screenshot: the shutter sound plays, the screen flashes white, and the image is saved directly to your Photo Library (add-only permission — no read access to existing photos).
 
 The status banner adapts to connection state:
 - `Simulator ON` — simulator is active
@@ -98,6 +98,15 @@ Full-screen camera with a live telemetry heads-up display overlaid around the fr
 
 Controls: mode toggle (photo ↔ video), shutter/record button, camera flip. A blinking "REC" indicator appears during video recording and a toast confirms save status.
 
+### Map
+Full-screen satellite map with live location tracking. Features:
+
+- **Live location** — system blue-dot `UserAnnotation` with auto-recentering via `MapCameraPosition.userLocation`
+- **Satellite / standard toggle** — switch between satellite imagery and standard map style
+- **Share location** — two share buttons: a Google Maps URL (renders as a clickable hyperlink in iMessage on all platforms) and plain-text coordinates via the native share sheet
+- **"Location not found" banner** — displayed with share buttons disabled when GPS is unavailable
+- Tab bar is hidden while active; a **Close** button returns to the TTE tab
+
 ### About
 Displays app version, build number, vehicle compatibility, and copyright information.
 
@@ -121,7 +130,7 @@ Displays app version, build number, vehicle compatibility, and copyright informa
 
 | Layer | Technology |
 |---|---|
-| UI | SwiftUI — declarative five-tab interface (TTE / Data / Bro Cam / Settings / About) |
+| UI | SwiftUI — declarative five-tab interface (TTE / Map / Bro Cam / Settings / About) |
 | Storage | SwiftData — on-device persistent log storage |
 | BLE | CoreBluetooth — scanning, connection, ELM327 AT init, ISO 15765-4 multi-frame parsing |
 | GPS | CoreLocation — `LocationManager`; background-capable, 10-second SwiftData snapshots |
