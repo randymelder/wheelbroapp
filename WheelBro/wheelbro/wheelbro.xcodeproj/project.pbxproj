@@ -1,0 +1,627 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A32C62972F85D9B900CF82BF /* playstore.png in Resources */ = {isa = PBXBuildFile; fileRef = A32C62952F85D9B900CF82BF /* playstore.png */; };
+		A32C62982F85D9B900CF82BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A32C62942F85D9B900CF82BF /* Assets.xcassets */; };
+		A32C62992F85D9B900CF82BF /* appstore.png in Resources */ = {isa = PBXBuildFile; fileRef = A32C62932F85D9B900CF82BF /* appstore.png */; };
+		A32C629A2F85D9B900CF82BF /* playstore.png in Resources */ = {isa = PBXBuildFile; fileRef = A32C62952F85D9B900CF82BF /* playstore.png */; };
+		A32C629B2F85D9B900CF82BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A32C62942F85D9B900CF82BF /* Assets.xcassets */; };
+		A32C629C2F85D9B900CF82BF /* appstore.png in Resources */ = {isa = PBXBuildFile; fileRef = A32C62932F85D9B900CF82BF /* appstore.png */; };
+		A32C629D2F85D9B900CF82BF /* playstore.png in Resources */ = {isa = PBXBuildFile; fileRef = A32C62952F85D9B900CF82BF /* playstore.png */; };
+		A32C629E2F85D9B900CF82BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A32C62942F85D9B900CF82BF /* Assets.xcassets */; };
+		A32C629F2F85D9B900CF82BF /* appstore.png in Resources */ = {isa = PBXBuildFile; fileRef = A32C62932F85D9B900CF82BF /* appstore.png */; };
+		A39D7EAA2F85EAF5004E649F /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A39D7EA92F85EAF5004E649F /* Launch Screen.storyboard */; };
+		A39D7EAC2F85EC55004E649F /* wheelbro_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = A39D7EAB2F85EC55004E649F /* wheelbro_logo.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A32C62772F85D75200CF82BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A32C625F2F85D75100CF82BF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A32C62662F85D75100CF82BF;
+			remoteInfo = wheelbro;
+		};
+		A32C62812F85D75200CF82BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A32C625F2F85D75100CF82BF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A32C62662F85D75100CF82BF;
+			remoteInfo = wheelbro;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A32C62672F85D75100CF82BF /* wheelbro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wheelbro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A32C62762F85D75200CF82BF /* wheelbroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = wheelbroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A32C62802F85D75200CF82BF /* wheelbroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = wheelbroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A32C62932F85D9B900CF82BF /* appstore.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = appstore.png; sourceTree = "<group>"; };
+		A32C62942F85D9B900CF82BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A32C62952F85D9B900CF82BF /* playstore.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playstore.png; sourceTree = "<group>"; };
+		A39D7EA92F85EAF5004E649F /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		A39D7EAB2F85EC55004E649F /* wheelbro_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wheelbro_logo.png; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A32C62692F85D75100CF82BF /* wheelbro */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = wheelbro;
+			sourceTree = "<group>";
+		};
+		A32C62792F85D75200CF82BF /* wheelbroTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = wheelbroTests;
+			sourceTree = "<group>";
+		};
+		A32C62832F85D75200CF82BF /* wheelbroUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = wheelbroUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A32C62642F85D75100CF82BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A32C62732F85D75200CF82BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A32C627D2F85D75200CF82BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A32C625E2F85D75100CF82BF = {
+			isa = PBXGroup;
+			children = (
+				A39D7EA92F85EAF5004E649F /* Launch Screen.storyboard */,
+				A39D7EAB2F85EC55004E649F /* wheelbro_logo.png */,
+				A32C62962F85D9B900CF82BF /* AppIcons */,
+				A32C62692F85D75100CF82BF /* wheelbro */,
+				A32C62792F85D75200CF82BF /* wheelbroTests */,
+				A32C62832F85D75200CF82BF /* wheelbroUITests */,
+				A32C62682F85D75100CF82BF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A32C62682F85D75100CF82BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A32C62672F85D75100CF82BF /* wheelbro.app */,
+				A32C62762F85D75200CF82BF /* wheelbroTests.xctest */,
+				A32C62802F85D75200CF82BF /* wheelbroUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A32C62962F85D9B900CF82BF /* AppIcons */ = {
+			isa = PBXGroup;
+			children = (
+				A32C62932F85D9B900CF82BF /* appstore.png */,
+				A32C62942F85D9B900CF82BF /* Assets.xcassets */,
+				A32C62952F85D9B900CF82BF /* playstore.png */,
+			);
+			name = AppIcons;
+			path = ../AppIcons;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A32C62662F85D75100CF82BF /* wheelbro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A32C628A2F85D75200CF82BF /* Build configuration list for PBXNativeTarget "wheelbro" */;
+			buildPhases = (
+				A32C62632F85D75100CF82BF /* Sources */,
+				A32C62642F85D75100CF82BF /* Frameworks */,
+				A32C62652F85D75100CF82BF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A32C62692F85D75100CF82BF /* wheelbro */,
+			);
+			name = wheelbro;
+			packageProductDependencies = (
+			);
+			productName = wheelbro;
+			productReference = A32C62672F85D75100CF82BF /* wheelbro.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A32C62752F85D75200CF82BF /* wheelbroTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A32C628D2F85D75200CF82BF /* Build configuration list for PBXNativeTarget "wheelbroTests" */;
+			buildPhases = (
+				A32C62722F85D75200CF82BF /* Sources */,
+				A32C62732F85D75200CF82BF /* Frameworks */,
+				A32C62742F85D75200CF82BF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A32C62782F85D75200CF82BF /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A32C62792F85D75200CF82BF /* wheelbroTests */,
+			);
+			name = wheelbroTests;
+			packageProductDependencies = (
+			);
+			productName = wheelbroTests;
+			productReference = A32C62762F85D75200CF82BF /* wheelbroTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A32C627F2F85D75200CF82BF /* wheelbroUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A32C62902F85D75200CF82BF /* Build configuration list for PBXNativeTarget "wheelbroUITests" */;
+			buildPhases = (
+				A32C627C2F85D75200CF82BF /* Sources */,
+				A32C627D2F85D75200CF82BF /* Frameworks */,
+				A32C627E2F85D75200CF82BF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A32C62822F85D75200CF82BF /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A32C62832F85D75200CF82BF /* wheelbroUITests */,
+			);
+			name = wheelbroUITests;
+			packageProductDependencies = (
+			);
+			productName = wheelbroUITests;
+			productReference = A32C62802F85D75200CF82BF /* wheelbroUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A32C625F2F85D75100CF82BF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2640;
+				LastUpgradeCheck = 2640;
+				TargetAttributes = {
+					A32C62662F85D75100CF82BF = {
+						CreatedOnToolsVersion = 26.4;
+					};
+					A32C62752F85D75200CF82BF = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = A32C62662F85D75100CF82BF;
+					};
+					A32C627F2F85D75200CF82BF = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = A32C62662F85D75100CF82BF;
+					};
+				};
+			};
+			buildConfigurationList = A32C62622F85D75100CF82BF /* Build configuration list for PBXProject "wheelbro" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A32C625E2F85D75100CF82BF;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A32C62682F85D75100CF82BF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A32C62662F85D75100CF82BF /* wheelbro */,
+				A32C62752F85D75200CF82BF /* wheelbroTests */,
+				A32C627F2F85D75200CF82BF /* wheelbroUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A32C62652F85D75100CF82BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A32C629D2F85D9B900CF82BF /* playstore.png in Resources */,
+				A32C629E2F85D9B900CF82BF /* Assets.xcassets in Resources */,
+				A39D7EAC2F85EC55004E649F /* wheelbro_logo.png in Resources */,
+				A39D7EAA2F85EAF5004E649F /* Launch Screen.storyboard in Resources */,
+				A32C629F2F85D9B900CF82BF /* appstore.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A32C62742F85D75200CF82BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A32C629A2F85D9B900CF82BF /* playstore.png in Resources */,
+				A32C629B2F85D9B900CF82BF /* Assets.xcassets in Resources */,
+				A32C629C2F85D9B900CF82BF /* appstore.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A32C627E2F85D75200CF82BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A32C62972F85D9B900CF82BF /* playstore.png in Resources */,
+				A32C62982F85D9B900CF82BF /* Assets.xcassets in Resources */,
+				A32C62992F85D9B900CF82BF /* appstore.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A32C62632F85D75100CF82BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A32C62722F85D75200CF82BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A32C627C2F85D75200CF82BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A32C62782F85D75200CF82BF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A32C62662F85D75100CF82BF /* wheelbro */;
+			targetProxy = A32C62772F85D75200CF82BF /* PBXContainerItemProxy */;
+		};
+		A32C62822F85D75200CF82BF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A32C62662F85D75100CF82BF /* wheelbro */;
+			targetProxy = A32C62812F85D75200CF82BF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A32C62882F85D75200CF82BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = TN2KCP3585;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A32C62892F85D75200CF82BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = TN2KCP3585;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A32C628B2F85D75200CF82BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 112;
+				DEVELOPMENT_TEAM = TN2KCP3585;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WheelBro;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.rcmaz.wheelbro;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A32C628C2F85D75200CF82BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 112;
+				DEVELOPMENT_TEAM = TN2KCP3585;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WheelBro;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.rcmaz.wheelbro;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A32C628E2F85D75200CF82BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TN2KCP3585;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.rcmaz.wheelbroTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/wheelbro.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/wheelbro";
+			};
+			name = Debug;
+		};
+		A32C628F2F85D75200CF82BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TN2KCP3585;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.rcmaz.wheelbroTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/wheelbro.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/wheelbro";
+			};
+			name = Release;
+		};
+		A32C62912F85D75200CF82BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TN2KCP3585;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.rcmaz.wheelbroUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = wheelbro;
+			};
+			name = Debug;
+		};
+		A32C62922F85D75200CF82BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TN2KCP3585;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.rcmaz.wheelbroUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = wheelbro;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A32C62622F85D75100CF82BF /* Build configuration list for PBXProject "wheelbro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A32C62882F85D75200CF82BF /* Debug */,
+				A32C62892F85D75200CF82BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A32C628A2F85D75200CF82BF /* Build configuration list for PBXNativeTarget "wheelbro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A32C628B2F85D75200CF82BF /* Debug */,
+				A32C628C2F85D75200CF82BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A32C628D2F85D75200CF82BF /* Build configuration list for PBXNativeTarget "wheelbroTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A32C628E2F85D75200CF82BF /* Debug */,
+				A32C628F2F85D75200CF82BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A32C62902F85D75200CF82BF /* Build configuration list for PBXNativeTarget "wheelbroUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A32C62912F85D75200CF82BF /* Debug */,
+				A32C62922F85D75200CF82BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A32C625F2F85D75100CF82BF /* Project object */;
+}
