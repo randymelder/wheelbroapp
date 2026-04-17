@@ -105,14 +105,23 @@ struct ContentView: View {
                 hasLaunchedBefore = true
             }
         }
-        // Pause the IMU when the app is backgrounded — GPS keeps running
-        // intentionally (UIBackgroundModes/location), but CMMotionManager
-        // has no background entitlement and wastes CPU when not visible.
+        // Pause IMU and GPS when the app leaves the foreground. Stopping GPS
+        // clears the system location-in-use indicator (blue arrow/pill) and
+        // saves battery. Location also stops on .inactive so transient states
+        // (notification center, app switcher, call banner) release location;
+        // IMU only stops on full .background.
         .onChange(of: scenePhase) { _, phase in
             switch phase {
-            case .active:       motionManager.startUpdates()
-            case .background:   motionManager.stopUpdates()
-            default:            break
+            case .active:
+                motionManager.startUpdates()
+                locationManager.startUpdating()
+            case .inactive:
+                locationManager.stopUpdating()
+            case .background:
+                motionManager.stopUpdates()
+                locationManager.stopUpdating()
+            @unknown default:
+                break
             }
         }
     }

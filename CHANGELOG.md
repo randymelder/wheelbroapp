@@ -13,6 +13,7 @@ All notable changes to WheelBro are documented here.
 - **TTE/DTE calculations driven by selected vehicle** — `OBDDataManager` reads `selectedProfile.tankGallons` and `selectedProfile.avgMPG` for all fuel-range math, replacing the previously hardcoded constants.
 
 ### Changed
+- **GPS pauses when app is not in foreground** (2026-04-17) — `ContentView` scene-phase observer now calls `locationManager.stopUpdating()` on `.inactive` and `.background`, and `locationManager.startUpdating()` on `.active`. Stops `CLLocationManager` location and heading delivery, which clears the iOS location-in-use indicator (blue arrow/pill) and reduces battery draw while the app is not visible. `allowsBackgroundLocationUpdates` and the `UIBackgroundModes/location` entitlement are retained but currently unused.
 - **Data tab hidden** — `DataView` removed from the tab bar; the file is retained for future use. Tab bar is now four tabs: TTE (0), Bro Cam (2), Settings (3), About (4).
 - **Settings tab order** — Simulator section moved below BLE Devices (Vehicle → BLE Devices → Simulator).
 - **`SettingsView` — `selectedTab` binding wired up** — `ContentView` now passes `$selectedTab` to `SettingsView`. Tapping a BLE device in the list connects and navigates directly to the TTE tab (`Tab.tte`).

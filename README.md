@@ -46,7 +46,7 @@ Live sensor data collected independently of the OBD connection:
 - **Pitch** — front-to-back tilt angle in degrees from the iPhone accelerometer; positive = nose up (climbing)
 - **Roll** — side-to-side tilt angle in degrees; positive = right side higher
 
-GPS collection starts automatically once location permission is granted and continues in the background while the app is running. Pitch and roll are provided by `CMMotionManager` at 10 Hz with no additional permissions required. IMU updates are paused when the app is backgrounded and resume when it returns to the foreground.
+GPS collection starts automatically once location permission is granted. Both GPS and IMU updates pause when the app leaves the foreground (including transient states like Notification Center, the app switcher, or an incoming call banner) and resume when the app becomes active again. Stopping GPS on background also clears the iOS location-in-use indicator (blue arrow/pill) in the status bar. Pitch and roll are provided by `CMMotionManager` at 10 Hz with no additional permissions required.
 
 ### PID Discovery
 Connect your OBD dongle and tap **Discover PIDs** to run a two-phase live query:
@@ -132,8 +132,8 @@ Displays app version, build number, vehicle compatibility, and copyright informa
 | UI | SwiftUI — five-tab interface (TTE / Map / Bro Cam / Settings / About); forced dark theme |
 | Storage | SwiftData — on-device persistent log storage with 1-hour auto-purge |
 | BLE | CoreBluetooth — scanning, connection, ELM327 AT init, ISO 15765-4 multi-frame parsing |
-| GPS | CoreLocation — `LocationManager`; background-capable live collection |
-| IMU | CoreMotion — `MotionManager`; pitch & roll at 10 Hz, paused in background |
+| GPS | CoreLocation — `LocationManager`; foreground-only live collection (paused on `.inactive` / `.background`) |
+| IMU | CoreMotion — `MotionManager`; pitch & roll at 10 Hz, paused on `.background` |
 | Camera | AVFoundation — `CameraManager`; `AVCaptureSession` (720p), `AVCaptureVideoDataOutput` + `AVAssetWriter` for HUD-composited video, `AVCapturePhotoOutput` for HUD-composited photos; auto-orientation via `UIDevice.orientationDidChangeNotification` |
 | Vehicle Profiles | `VehicleProfile` model — encapsulates tank size, avg MPG, and OBD protocol per vehicle; extensible by adding entries to `VehicleProfile.all` |
 | State | `@Observable` managers injected via the SwiftUI environment |
@@ -151,6 +151,12 @@ Displays app version, build number, vehicle compatibility, and copyright informa
 
 ### Multi-Frame ISO-TP Handling
 VIN (Mode 09 PID 02) and DTC (Mode 03) responses arrive as multi-frame ISO 15765-4 CAN sequences. The parser accumulates frame segments (`0:`, `1:`, `2:`) and decodes them once a complete payload is received.
+
+---
+
+## Support
+
+[www@rcmaz.io](mailto:www@rcmaz.io)
 
 ---
 

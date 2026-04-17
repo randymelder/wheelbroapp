@@ -3,18 +3,22 @@
 // heading (true north), and altitude.
 //
 // COLLECTION MODEL:
-//   - CLLocationManager runs continuously once authorized (no stop/start cycling).
-//   - allowsBackgroundLocationUpdates = true so collection continues when the
-//     app is backgrounded while still running.
+//   - GPS runs only while the app is in the foreground. ContentView observes
+//     scenePhase and calls stopUpdating() on .inactive/.background and
+//     startUpdating() on .active. Stopping updates clears the system
+//     location-in-use indicator (blue arrow/pill) and saves battery.
+//   - allowsBackgroundLocationUpdates = true and the UIBackgroundModes/location
+//     entitlement are retained but currently unused — the capability is kept
+//     available in case the foreground-only policy is revisited.
 //   - pausesLocationUpdatesAutomatically = false prevents CoreLocation from
-//     suspending updates when motion is not detected.
-//   - A 10-second timer snapshots the latest values to SwiftData independently
-//     of the OBD logging toggle — GPS collection is always-on when authorized.
+//     suspending updates when motion is not detected while in foreground.
+//   - A 10-second timer snapshots the latest values to SwiftData. It is
+//     currently disabled (startLocationLogging() call sites commented out).
 //
 // PERMISSIONS REQUIRED IN Info.plist:
 //   NSLocationWhenInUseUsageDescription
 //   NSLocationAlwaysAndWhenInUseUsageDescription
-//   UIBackgroundModes → location
+//   UIBackgroundModes → location  (retained, currently unused)
 
 import Foundation
 import CoreLocation
@@ -170,7 +174,7 @@ extension LocationManager: CLLocationManagerDelegate {
         longitude = loc.coordinate.longitude
         altitude  = loc.altitude
         
-        //print("[Location] lat=\(String(format: "%.5f", latitude)) lon=\(String(format: "%.5f", longitude)) alt=\(String(format: "%.0f", altitude))m")
+        print("[Location] lat=\(String(format: "%.5f", latitude)) lon=\(String(format: "%.5f", longitude)) alt=\(String(format: "%.0f", altitude))m")
     }
 
     func locationManager(_ manager: CLLocationManager,
