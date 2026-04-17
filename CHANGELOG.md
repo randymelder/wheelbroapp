@@ -7,6 +7,7 @@ All notable changes to WheelBro are documented here.
 ## [Unreleased]
 
 ### Added
+- **About tab — Website row** (2026-04-17) — added a tappable "Website" row below Version/Build in `AboutView` that opens `https://wheelbro.app/` via SwiftUI `Link`.
 - **`VehicleProfile` model** — new `struct` (`id`, `name`, `tankGallons`, `avgMPG`, `obdProtocol`, `protocolDescription`) that describes a supported vehicle and its OBD-II physical-layer protocol. Adding a new vehicle requires only a new `VehicleProfile` entry in `VehicleProfile.all` — no other code changes needed.
 - **Vehicle picker in Settings** — a `Picker` at the top of the Settings tab lets the user select from the supported vehicle list. Selection is persisted to `UserDefaults` (`UserDefaultsKey.selectedVehicle`) and survives app restarts.
 - **Auto Detect vehicle profile** — `VehicleProfile.autoDetect` uses `ATSP0` so the ELM327 probes all protocols automatically. The adapter works through CAN variants first, then ISO/KWP, PWM, and VPW. A failure alert is shown if all protocols are exhausted without a response. TTE/DTE fall back to generic values (18.6 gal / 15 MPG).

@@ -42,6 +42,10 @@ struct AboutView: View {
                         infoRow(label: "Version",  value: appVersion)
                         Divider().background(Color.white.opacity(0.08))
                         infoRow(label: "Build",    value: buildNumber)
+                        Divider().background(Color.white.opacity(0.08))
+                        Link(destination: URL(string: "https://wheelbro.app/")!) {
+                            infoRow(label: "Website", value: "wheelbro.app")
+                        }
                         //Divider().background(Color.white.opacity(0.08))
                         //infoRow(label: "Vehicle",  value: AppInfo.vehicleName)
                     }
